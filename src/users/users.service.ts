@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,10 +8,8 @@ import { UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) {}
-  
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
@@ -21,9 +19,10 @@ export class UsersService {
   }
 
   async findOne(email: string) {
-    const user = await this.userModel.findById(email).exec();
+    const user = await this.userModel.findOne({ email }).lean().exec();
     if (!user) {
-      throw new Error(`User with email ${email} not found`);
+      // Error not specific on purpose for security reasons
+      throw new NotFoundException(`Email or password is incorrect`);
     }
     return user;
   }

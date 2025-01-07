@@ -25,8 +25,21 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Request() req) {
+    return await this.authService.logout(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh')
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    return await this.authService.refreshToken(refreshToken);
   }
 }

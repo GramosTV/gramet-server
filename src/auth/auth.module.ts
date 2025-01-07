@@ -7,11 +7,13 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
+import { RefreshTokensModule } from 'src/refresh-tokens/refresh-tokens.module';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
+    RefreshTokensModule,
     ConfigModule.forRoot(),
     JwtModule.register({
       secret: process.env.JWT_SECRET,

@@ -13,6 +13,6 @@ async function bootstrap() {
     '/transactions/webhook',
     bodyParser.raw({ type: 'application/json' }),
   );
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();

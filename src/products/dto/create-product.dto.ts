@@ -43,7 +43,6 @@ export class CreateProductDto {
   price: number;
 
   @IsArray()
-  @ArrayMinSize(1)
-  @IsUrl({}, { each: true })
+  @IsString({ each: true })
   images: string[];
 }

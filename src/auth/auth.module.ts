@@ -5,9 +5,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './local.strategy';
-import { JwtStrategy } from './jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshTokensModule } from 'src/refresh-tokens/refresh-tokens.module';
+import { JwtAdminStrategy } from './strategies/jwt-admin.strategy';
 
 @Module({
   imports: [
@@ -15,12 +16,9 @@ import { RefreshTokensModule } from 'src/refresh-tokens/refresh-tokens.module';
     PassportModule,
     RefreshTokensModule,
     ConfigModule.forRoot(),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60s' },
-    }),
+    JwtModule,
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtAdminStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })

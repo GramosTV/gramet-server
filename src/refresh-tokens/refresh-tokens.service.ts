@@ -7,16 +7,27 @@ import {
 } from './schemas/refresh-token.schema';
 import * as bcrypt from 'bcrypt';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { JwtRefreshPayload } from 'src/common/interfaces/jwtPayload';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class RefreshTokensService {
   constructor(
     @InjectModel(RefreshToken.name)
     private refreshTokenModel: Model<RefreshTokenDocument>,
+    private jwtService: JwtService,
   ) {}
 
-  async create(userId: string, token: string, jti: string): Promise<string> {
+  async create(
+    userId: string,
+    payload: JwtRefreshPayload,
+    jti: string,
+  ): Promise<string> {
     try {
+      const token = this.jwtService.sign(payload, {
+        expiresIn: '30d',
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
       const activeTokens = await this.refreshTokenModel.find({
         userId,
         isRevoked: false,

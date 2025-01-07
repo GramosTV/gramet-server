@@ -9,6 +9,10 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokensService } from 'src/refresh-tokens/refresh-tokens.service';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  JwtAccessPayload,
+  JwtRefreshPayload,
+} from 'src/common/interfaces/jwtPayload';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +22,7 @@ export class AuthService {
     private refreshTokensService: RefreshTokensService,
   ) {}
 
-  generateAccessToken(payload: any): string {
+  generateAccessToken(payload: JwtAccessPayload): string {
     try {
       return this.jwtService.sign(payload, {
         expiresIn: '10m',
@@ -29,16 +33,22 @@ export class AuthService {
     }
   }
 
-  async validateRefreshToken(refreshToken: string): Promise<any> {
+  async validateRefreshToken(refreshToken: string): Promise<JwtRefreshPayload> {
     try {
       const decoded = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_REFRESH_SECRET,
       });
+
       const token = await this.refreshTokensService.findOne(decoded.jti);
-      console.log(token);
-      if (!token || token?.isRevoked || token?.expiresAt < new Date()) {
+      if (!token || token.isRevoked || token.expiresAt < new Date()) {
         throw new UnauthorizedException('Invalid or expired refresh token');
       }
+
+      const isValid = await bcrypt.compare(refreshToken, token.token);
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
       return decoded;
     } catch (e) {
       throw new UnauthorizedException('Invalid or expired refresh token');
@@ -67,14 +77,16 @@ export class AuthService {
   async login(user: any) {
     try {
       const jti = uuidv4();
-      const payload = { email: user.email, sub: user._id, jti };
+      const payload = {
+        email: user.email,
+        sub: user._id,
+        jti,
+        role: user.role,
+      };
       const accessToken = this.generateAccessToken(payload);
       const refreshToken = await this.refreshTokensService.create(
         user._id,
-        this.jwtService.sign(payload, {
-          expiresIn: '30d',
-          secret: process.env.JWT_REFRESH_SECRET,
-        }),
+        payload,
         jti,
       );
       return {
@@ -102,8 +114,9 @@ export class AuthService {
     try {
       const payload = await this.validateRefreshToken(refreshToken);
       const newAccessToken = this.generateAccessToken({
-        id: payload.id,
+        sub: payload.sub,
         email: payload.email,
+        role: payload.role,
       });
       return {
         accessToken: newAccessToken,

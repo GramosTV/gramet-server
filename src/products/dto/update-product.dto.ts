@@ -7,7 +7,6 @@ import {
   IsArray,
   ArrayMinSize,
   IsUrl,
-  IsNotEmpty,
   IsEnum,
   ValidateNested,
 } from 'class-validator';
@@ -17,36 +16,34 @@ import { CreateColorDto } from 'src/common/interfaces/color';
 export class UpdateProductDto {
   @IsString()
   @IsOptional()
-  @IsNotEmpty()
   name?: string;
 
   @IsString()
   @IsOptional()
-  @IsNotEmpty()
   brand?: string;
 
   @ValidateNested({ each: true })
   @Type(() => CreateColorDto)
+  @IsOptional()
   colors?: CreateColorDto[];
 
-  @IsEnum(Material)
+  @IsEnum(Material, { each: true })
   @IsOptional()
-  @IsNotEmpty()
-  material?: Material;
+  materials?: Material[];
 
   @IsInt()
-  @IsOptional()
   @IsPositive()
+  @IsOptional()
   stock?: number;
 
   @IsInt()
-  @IsOptional()
   @IsPositive()
+  @IsOptional()
   price?: number;
 
   @IsArray()
-  @IsOptional()
   @ArrayMinSize(1)
   @IsUrl({}, { each: true })
+  @IsOptional()
   images?: string[];
 }

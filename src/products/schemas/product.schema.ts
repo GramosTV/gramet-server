@@ -17,8 +17,8 @@ export class Product {
   @Prop({ type: [ColorSchema], required: true })
   colors: Color[];
 
-  @Prop({ required: true, enum: Material })
-  material: Material;
+  @Prop({ required: true, type: [String], enum: Material })
+  material: Material[];
 
   @Prop({ required: true, min: 0 })
   price: number;

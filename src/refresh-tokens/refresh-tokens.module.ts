@@ -6,8 +6,10 @@ import {
   RefreshToken,
   RefreshTokenSchema,
 } from './schemas/refresh-token.schema';
+import { JwtModule } from '@nestjs/jwt';
 @Module({
   imports: [
+    JwtModule,
     ScheduleModule.forRoot(),
     MongooseModule.forFeature([
       { name: RefreshToken.name, schema: RefreshTokenSchema },

@@ -30,9 +30,9 @@ export class CreateProductDto {
   @Type(() => CreateColorDto)
   colors: CreateColorDto[];
 
-  @IsEnum(Material)
+  @IsEnum(Material, { each: true })
   @IsNotEmpty()
-  material: Material;
+  materials: Material[];
 
   @IsInt()
   @IsPositive()

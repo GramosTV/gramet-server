@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RefreshTokensModule } from './refresh-tokens/refresh-tokens.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RefreshTokensModule } from './refresh-tokens/refresh-tokens.module';
     UsersModule,
     AuthModule,
     RefreshTokensModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RefreshTokensModule } from './refresh-tokens/refresh-tokens.module';
 import { ProductsModule } from './products/products.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProductsModule } from './products/products.module';
     AuthModule,
     RefreshTokensModule,
     ProductsModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

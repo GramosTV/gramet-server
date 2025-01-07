@@ -17,6 +17,14 @@ export class ProductsService {
     return createdProduct.save();
   }
 
+  async findOne(id: string): Promise<Product> {
+    const product = await this.productModel.findById(id);
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+    return product;
+  }
+
   async update(
     id: string,
     updateProductDto: UpdateProductDto,

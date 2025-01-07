@@ -6,20 +6,37 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { StripeService } from './stripe.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('transactions')
 export class TransactionsController {
-  constructor(private readonly transactionsService: TransactionsService) {}
+  constructor(
+    private readonly transactionsService: TransactionsService,
+    private readonly stripeService: StripeService,
+  ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionsService.create(createTransactionDto);
+  async create(@Body() createTransactionDto: CreateTransactionDto) {
+    await this.transactionsService.create(createTransactionDto);
+    const sessionUrl =
+      await this.stripeService.createCheckoutSession(createTransactionDto);
+    return { url: sessionUrl };
   }
 
+  @Post('/webhook')
+  async handleCheckoutWebhook(@Req() request, @Body() body) {
+    return await this.stripeService.handleCheckoutWebhook(request, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':userId')
   findByUser(@Param('userId') userId: string) {
     return this.transactionsService.findByUser(userId);

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { Roles } from 'src/common/enums/roles';
+import { Color } from 'src/products/schemas/color.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -8,6 +9,9 @@ export type UserDocument = HydratedDocument<User>;
 export class CartItem {
   @Prop({ type: Types.ObjectId, ref: 'Product', required: true })
   productId: string;
+
+  @Prop({ required: true })
+  color: Color;
 
   @Prop({ required: true, min: 1 })
   quantity: number;

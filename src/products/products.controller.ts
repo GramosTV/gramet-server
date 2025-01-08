@@ -14,7 +14,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAdminGuard } from 'src/auth/guards/jwt-admin.guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { convertToBase64, compressImage } from 'src/libs/utils';
+import { convertToBase64, compressImage } from 'src/lib/utils';
 import { map } from 'async';
 
 @Controller('products')

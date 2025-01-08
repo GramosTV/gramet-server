@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { MongooseValidationExceptionFilter } from './common/filters/mongoose-validation-exception.filter';
 import { json } from 'express';
 import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,7 @@ async function bootstrap() {
     '/transactions/webhook',
     bodyParser.raw({ type: 'application/json' }),
   );
+  app.use(cookieParser());
   await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();

@@ -13,6 +13,7 @@ import {
   JwtAccessPayload,
   JwtRefreshPayload,
 } from 'src/common/interfaces/jwtPayload';
+import { User } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -55,22 +56,26 @@ export class AuthService {
     }
   }
 
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<Omit<User, 'password'>> {
     try {
       const user = await this.usersService.findOne(email);
       if (!user) {
-        throw new UnauthorizedException('Invalid credentials');
+        throw new Error();
       }
 
       const isMatch = await bcrypt.compare(pass, user.password);
       if (!isMatch) {
-        throw new UnauthorizedException('Invalid credentials');
+        throw new Error();
       }
 
       const { password, ...result } = user;
       return result;
     } catch (error) {
-      throw new InternalServerErrorException('Error validating user');
+      console.log(error);
+      throw new UnauthorizedException('Invalid credentials');
     }
   }
 

@@ -14,11 +14,14 @@ export class Product {
   @Prop({ required: true })
   brand: string;
 
+  @Prop({ required: true })
+  code: string;
+
   @Prop({ type: [ColorSchema], required: true })
   colors: Color[];
 
   @Prop({ required: true, type: [String], enum: Material })
-  material: Material[];
+  materials: Material[];
 
   @Prop({ required: true, min: 0 })
   price: number;

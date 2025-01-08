@@ -36,10 +36,6 @@ export class CreateProductDto {
 
   @IsInt()
   @IsPositive()
-  stock: number;
-
-  @IsInt()
-  @IsPositive()
   price: number;
 
   @IsArray()

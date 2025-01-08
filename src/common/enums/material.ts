@@ -13,5 +13,6 @@ export enum Material {
   RATTAN = 'rattan',
   FOAM = 'foam',
   VINYL = 'vinyl',
+  COTTON = 'cotton',
   OTHER = 'other',
 }

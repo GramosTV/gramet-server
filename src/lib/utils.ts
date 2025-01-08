@@ -1,4 +1,4 @@
-import sharp from 'sharp';
+import * as sharp from 'sharp';
 
 export const convertToBase64 = (file: Express.Multer.File) => {
   return file.buffer.toString('base64');

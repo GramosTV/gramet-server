@@ -9,6 +9,7 @@ import {
   IsUrl,
   IsEnum,
   ValidateNested,
+  IsBoolean,
 } from 'class-validator';
 import { Material } from 'src/common/enums/material';
 import { CreateColorDto } from 'src/common/interfaces/color';
@@ -46,4 +47,8 @@ export class UpdateProductDto {
   @IsUrl({}, { each: true })
   @IsOptional()
   images?: string[];
+
+  @IsBoolean()
+  @IsOptional()
+  public?: boolean;
 }

@@ -9,6 +9,7 @@ import {
   IsNotEmpty,
   IsEnum,
   ValidateNested,
+  IsBoolean,
 } from 'class-validator';
 import { Material } from 'src/common/enums/material';
 import { Color, CreateColorDto } from 'src/common/interfaces/color';
@@ -41,4 +42,7 @@ export class CreateProductDto {
   @IsArray()
   @IsString({ each: true })
   images: string[];
+
+  @IsBoolean()
+  public: boolean;
 }

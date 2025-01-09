@@ -28,6 +28,9 @@ export class Product {
 
   @Prop({ required: true })
   images: string[];
+
+  @Prop({ required: true, default: false })
+  public: boolean;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

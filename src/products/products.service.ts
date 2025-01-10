@@ -26,7 +26,13 @@ export class ProductsService {
     const products = await this.productModel
       .aggregate([
         { $match: { public: true } },
-        { $project: { name: 1, image: { $arrayElemAt: ['$images', 0] } } },
+        {
+          $project: {
+            name: 1,
+            image: { $arrayElemAt: ['$images', 0] },
+            price: 1,
+          },
+        },
         { $skip: (page - 1) * limit },
         { $limit: limit },
       ])

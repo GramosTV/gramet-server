@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Product } from 'src/products/schemas/product.schema';
-import { CartItem } from 'src/users/schemas/user.schema';
+import { CartItem } from 'src/cart/schemas/cart.schema';
 
 export class CreateTransactionDto {
   @IsMongoId()

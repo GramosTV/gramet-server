@@ -6,20 +6,6 @@ import { Color } from 'src/products/schemas/color.schema';
 export type UserDocument = HydratedDocument<User>;
 
 @Schema()
-export class CartItem {
-  @Prop({ type: Types.ObjectId, ref: 'Product', required: true })
-  productId: string;
-
-  @Prop({ required: true })
-  color: Color;
-
-  @Prop({ required: true, min: 1 })
-  quantity: number;
-}
-
-export const CartItemSchema = SchemaFactory.createForClass(CartItem);
-
-@Schema()
 export class User {
   @Prop({ required: true })
   name: string;
@@ -48,8 +34,8 @@ export class User {
   @Prop()
   updatedAt: Date;
 
-  @Prop({ type: [CartItemSchema], default: [] })
-  cart: CartItem[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Cart' }], default: [] })
+  cart: Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

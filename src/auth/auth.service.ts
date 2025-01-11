@@ -26,7 +26,7 @@ export class AuthService {
   generateAccessToken(payload: JwtAccessPayload): string {
     try {
       return this.jwtService.sign(payload, {
-        expiresIn: '10m',
+        expiresIn: '15m',
         secret: process.env.JWT_SECRET,
       });
     } catch (error) {

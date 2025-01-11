@@ -3,9 +3,9 @@ import { HttpException, HttpStatus, Injectable, Request } from '@nestjs/common';
 import { Product } from 'src/products/schemas/product.schema';
 import Stripe from 'stripe';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { CartItem } from 'src/users/schemas/user.schema';
 import { map } from 'async';
 import { ProductsService } from 'src/products/products.service';
+import { CartItem } from 'src/cart/schemas/cart.schema';
 
 @Injectable()
 export class StripeService {

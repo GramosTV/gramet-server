@@ -25,6 +25,7 @@ import {
 import { convertToBase64, compressImage } from 'src/lib/utils';
 import { map } from 'async';
 import { Product } from './schemas/product.schema';
+import { Category } from 'src/common/enums/category';
 
 @Controller('products')
 export class ProductsController {
@@ -34,11 +35,15 @@ export class ProductsController {
   async find(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
+    @Query('category') category: Category,
   ) {
     if (limit > 50) {
       throw new BadRequestException('Limit must be less than 50');
     }
-    return await this.productService.find(page, limit);
+    if (category && !Object.values(Category).includes(category)) {
+      category = undefined;
+    }
+    return await this.productService.find(page, limit, category);
   }
 
   @UseGuards(JwtAdminGuard)

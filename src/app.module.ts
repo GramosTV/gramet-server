@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { RefreshTokensModule } from './refresh-tokens/refresh-tokens.module';
 import { ProductsModule } from './products/products.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TransactionsModule } from './transactions/transactions.module';
     RefreshTokensModule,
     ProductsModule,
     TransactionsModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],

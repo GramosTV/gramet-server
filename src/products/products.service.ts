@@ -5,6 +5,8 @@ import { Product, ProductDocument } from './schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Color } from './schemas/color.schema';
+import { Category } from 'src/common/enums/category';
+import { map } from 'async';
 
 @Injectable()
 export class ProductsService {
@@ -16,16 +18,19 @@ export class ProductsService {
   async find(
     page: number,
     limit: number,
+    category: Category | undefined,
   ): Promise<{
     products: { name: string; image: string }[];
     pageCount: number;
   }> {
-    const totalCount = await this.productModel.countDocuments({});
+    const matchStage = category ? { public: true, category } : { public: true };
+
+    const totalCount = await this.productModel.countDocuments(matchStage);
     const pageCount = Math.ceil(totalCount / limit);
 
     const products = await this.productModel
       .aggregate([
-        { $match: { public: true } },
+        { $match: matchStage },
         {
           $project: {
             name: 1,
@@ -39,6 +44,25 @@ export class ProductsService {
       .exec();
 
     return { products, pageCount };
+  }
+
+  async findForCart(ids: string[]): Promise<{ name: string; image: string }[]> {
+    const products = await map(ids, async (id: string) => {
+      return await this.productModel
+        .aggregate([
+          { $match: { public: true, _id: id } },
+          {
+            $project: {
+              name: 1,
+              image: { $arrayElemAt: ['$images', 0] },
+              price: 1,
+              colors: 1,
+            },
+          },
+        ])
+        .exec()[0];
+    });
+    return products;
   }
 
   async findForAdmin(

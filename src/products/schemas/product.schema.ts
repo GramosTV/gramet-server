@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 import { Material } from 'src/common/enums/material';
 import { Color } from 'src/common/interfaces/color';
 import { ColorSchema } from './color.schema';
+import { Category } from 'src/common/enums/category';
 
 export type ProductDocument = HydratedDocument<Product>;
 
@@ -16,6 +17,9 @@ export class Product {
 
   @Prop({ required: true })
   code: string;
+
+  @Prop({ required: true, enum: Category })
+  category: Category;
 
   @Prop({ type: [ColorSchema], required: true })
   colors: Color[];

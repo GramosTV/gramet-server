@@ -18,13 +18,13 @@ export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('/cart')
+  @Get()
   async getCart(@Req() req: Request & { user: JwtAccessPayload }) {
     return await this.cartService.getCart(req.user.sub);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('/cart')
+  @Patch()
   async addToCart(
     @Req() req: Request & { user: JwtAccessPayload },
     @Body() { productId, quantity, colorId }: AddToCartDto,

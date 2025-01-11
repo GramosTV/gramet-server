@@ -11,8 +11,15 @@ export class CartService {
     private readonly productsService: ProductsService,
   ) {}
   async getCart(id: string) {
-    const cart = await this.cartModel.findOne({ userId: id }).lean().exec();
-    return cart || { userId: id, items: [] };
+    let cart = await this.cartModel.findOne({ userId: id }).exec();
+    if (!cart) {
+      cart = new this.cartModel({ userId: id });
+      await cart.save();
+    }
+
+    const items = await this.productsService.findForCart(cart.items);
+    await cart.save();
+    return { itemData: items };
   }
 
   async addToCart(
@@ -26,15 +33,22 @@ export class CartService {
       cart = new this.cartModel({ userId: id });
       await cart.save();
     }
-    const items = await this.productsService.findForCart([
-      ...cart.items.map((item) => item.productId),
-      productId,
-    ]);
-    cart.items.push({
-      productId,
-      quantity,
-      colorId,
-    });
-    return { ...cart, itemData: items };
+    const existingItemIndex = cart.items.findIndex(
+      (item) => item.productId === productId && item.colorId === colorId,
+    );
+
+    if (existingItemIndex > -1) {
+      cart.items[existingItemIndex].quantity += quantity;
+    } else {
+      cart.items.push({
+        productId,
+        quantity,
+        colorId,
+      });
+    }
+
+    const items = await this.productsService.findForCart(cart.items);
+    await cart.save();
+    return { itemData: items };
   }
 }

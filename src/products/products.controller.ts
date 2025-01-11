@@ -82,7 +82,6 @@ export class ProductsController {
       ...product,
       images: imagesBase64,
     };
-    console.log(productWithImages.images);
     return await this.productService.create(productWithImages);
   }
 

@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Product, ProductDocument } from './schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Color } from './schemas/color.schema';
 import { Category } from 'src/common/enums/category';
 import { map } from 'async';
+import { CartItem } from 'src/cart/schemas/cart.schema';
 
 @Injectable()
 export class ProductsService {
@@ -46,21 +47,35 @@ export class ProductsService {
     return { products, pageCount };
   }
 
-  async findForCart(ids: string[]): Promise<{ name: string; image: string }[]> {
-    const products = await map(ids, async (id: string) => {
-      return await this.productModel
-        .aggregate([
-          { $match: { public: true, _id: id } },
-          {
-            $project: {
-              name: 1,
-              image: { $arrayElemAt: ['$images', 0] },
-              price: 1,
-              colors: 1,
+  async findForCart(
+    data: CartItem[],
+  ): Promise<
+    { name: string; image: string; price: number; colors: Color[] }[]
+  > {
+    const products = await map(data, async (e: CartItem) => {
+      const res = await (
+        await this.productModel
+          .aggregate([
+            {
+              $match: {
+                public: true,
+                _id: new Types.ObjectId(e.productId),
+                'colors._id': new Types.ObjectId(e.colorId),
+              },
             },
-          },
-        ])
-        .exec()[0];
+            {
+              $project: {
+                name: 1,
+                image: { $arrayElemAt: ['$images', 0] },
+                price: 1,
+                colors: 1,
+              },
+            },
+          ])
+          .exec()
+      )[0];
+      res.quantity = e.quantity;
+      return res;
     });
     return products;
   }

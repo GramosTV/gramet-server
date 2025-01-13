@@ -1,56 +1,52 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsEnum, IsArray, ValidateNested, Min, Max, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsEnum,
+  IsArray,
+  ValidateNested,
+  Min,
+  Max,
+  Length,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class CreateCartItemDto {
-    @IsNotEmpty()
-    @IsString()
-    @Length(24, 24)
-    productId: string;
+  @IsNotEmpty()
+  @IsString()
+  @Length(24, 24)
+  productId: string;
 
-    @IsNotEmpty()
-    @Min(1)
-    @Max(100)
-    quantity: number;
+  @IsNotEmpty()
+  @Min(1)
+  @Max(100)
+  quantity: number;
 }
 
 export class CreateUserDto {
-    @IsNotEmpty()
-    @IsString()
-    @Length(2, 50)
-    name: string;
+  @IsNotEmpty()
+  @IsString()
+  @Length(2, 50)
+  name: string;
 
-    @IsNotEmpty()
-    @IsString()
-    @Length(2, 50)
-    surname: string;
+  @IsNotEmpty()
+  @IsString()
+  @Length(2, 50)
+  surname: string;
 
-    @IsNotEmpty()
-    @IsEmail()
-    @Length(5, 100)
-    email: string;
+  @IsNotEmpty()
+  @IsEmail()
+  @Length(5, 100)
+  email: string;
 
-    @IsNotEmpty()
-    @IsString()
-    @Length(6, 20)
-    password: string;
+  @IsNotEmpty()
+  @IsString()
+  @Length(6, 20)
+  password: string;
 
-    @IsOptional()
-    @IsString()
-    @Length(5, 255)
-    address?: string;
-
-    @IsOptional()
-    @IsString()
-    @Length(10, 15)
-    phoneNumber?: string;
-
-    @IsOptional()
-    @IsEnum(['customer', 'admin'])
-    role?: string;
-
-    @IsOptional()
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => CreateCartItemDto)
-    cart?: CreateCartItemDto[];
+  @IsOptional()
+  @IsString()
+  @Length(9, 15)
+  phoneNumber?: string;
 }

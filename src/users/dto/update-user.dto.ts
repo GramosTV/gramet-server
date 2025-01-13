@@ -1,4 +1,14 @@
-import { IsEmail, IsOptional, IsString, IsEnum, IsArray, ValidateNested, Min, Max, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsEnum,
+  IsArray,
+  ValidateNested,
+  Min,
+  Max,
+  Length,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
@@ -42,7 +52,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsString()
-  @Length(10, 15)
+  @Length(9, 15)
   phoneNumber?: string;
 
   @IsOptional()

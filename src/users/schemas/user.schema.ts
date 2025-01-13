@@ -19,10 +19,7 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop()
-  address: string;
-
-  @Prop()
+  @Prop({ required: true })
   phoneNumber: string;
 
   @Prop({ default: Roles.CUSTOMER, enum: Roles })

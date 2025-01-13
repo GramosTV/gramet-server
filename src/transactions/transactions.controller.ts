@@ -22,16 +22,16 @@ export class TransactionsController {
     private readonly stripeService: StripeService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post()
-  async create(@Body() createTransactionDto: CreateTransactionDto) {
-    await this.transactionsService.create(createTransactionDto);
-    const sessionUrl =
-      await this.stripeService.createCheckoutSession(createTransactionDto);
-    return { url: sessionUrl };
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Post()
+  // async create(@Body() createTransactionDto: CreateTransactionDto) {
+  //   await this.transactionsService.create(createTransactionDto);
+  //   const sessionUrl =
+  //     await this.stripeService.createCheckoutSession(createTransactionDto);
+  //   return { url: sessionUrl };
+  // }
 
-  @Post('/webhook')
+  @Post('/stripe/webhook')
   async handleCheckoutWebhook(@Req() request, @Body() body) {
     return await this.stripeService.handleCheckoutWebhook(request, body);
   }

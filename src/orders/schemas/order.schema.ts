@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { CartItem } from 'src/cart/schemas/cart.schema';
-import { Status } from 'src/common/enums/status';
+import { DeliveryStatus, PaymentStatus } from 'src/common/enums/status';
 
 export type OrderDocument = HydratedDocument<Order>;
 
@@ -10,12 +10,22 @@ export class Order {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: string;
 
+  @Prop({ required: true })
+  transactionId: string;
+
   @Prop({
     required: true,
-    enum: Status,
-    default: Status.PENDING,
+    enum: PaymentStatus,
+    default: PaymentStatus.PENDING,
   })
-  status: string;
+  paymentStatus: string;
+
+  @Prop({
+    required: true,
+    enum: DeliveryStatus,
+    default: DeliveryStatus.NOT_DISPATCHED,
+  })
+  deliveryStatus: string;
 
   @Prop({ required: true })
   fullName: string;

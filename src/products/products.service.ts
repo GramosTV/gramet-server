@@ -8,6 +8,7 @@ import { Color } from './schemas/color.schema';
 import { Category } from 'src/common/enums/category';
 import { map } from 'async';
 import { CartItem } from 'src/cart/schemas/cart.schema';
+import { CartItemForUser } from 'src/common/interfaces/cartItemForUser';
 
 @Injectable()
 export class ProductsService {
@@ -65,11 +66,7 @@ export class ProductsService {
     }
   }
 
-  async findForCart(
-    data: CartItem[],
-  ): Promise<
-    { name: string; image: string; price: number; colors: Color[] }[]
-  > {
+  async findForCart(data: CartItem[]): Promise<CartItemForUser[]> {
     const products = await map(data, async (e: CartItem) => {
       const res = await (
         await this.productModel

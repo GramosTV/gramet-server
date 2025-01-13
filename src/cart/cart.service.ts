@@ -22,6 +22,15 @@ export class CartService {
     return { itemData: items };
   }
 
+  async getRawCart(id: string) {
+    let cart = await this.cartModel.findOne({ userId: id }).exec();
+    if (!cart) {
+      cart = new this.cartModel({ userId: id });
+      await cart.save();
+    }
+    return cart;
+  }
+
   async addToCart(
     id: string,
     productId: string,

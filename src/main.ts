@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalFilters(new MongooseValidationExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.use(
-    '/transactions/webhook',
+    '/transactions/stripe/webhook',
     bodyParser.raw({ type: 'application/json' }),
   );
   app.use(bodyParser.json({ limit: '50mb' })); // Adjust the size as needed

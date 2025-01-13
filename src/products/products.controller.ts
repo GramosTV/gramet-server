@@ -13,6 +13,7 @@ import {
   BadRequestException,
   Patch,
   Delete,
+  Res,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -26,6 +27,7 @@ import { convertToBase64, compressImage } from 'src/lib/utils';
 import { map } from 'async';
 import { Product } from './schemas/product.schema';
 import { Category } from 'src/common/enums/category';
+import { Response } from 'express';
 
 @Controller('products')
 export class ProductsController {
@@ -58,9 +60,26 @@ export class ProductsController {
     return await this.productService.findForAdmin(page, limit);
   }
 
-  @Get('/:id')
-  async findOne(@Param('id') id: string) {
-    return await this.productService.findOne(id);
+  // @Get('/:id')
+  // async findOne(@Param('id') id: string) {
+  //   return await this.productService.findOne(id);
+  // }
+
+  @Get('/by-name/:name')
+  async findOneByName(@Param('name') name: string) {
+    return await this.productService.findOneByName(name);
+  }
+
+  @Get('/image/:id')
+  async getImage(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const imageBase64 = await this.productService.getImage(id);
+      const imageBuffer = Buffer.from(imageBase64, 'base64');
+      res.setHeader('Content-Type', 'image/png');
+      res.send(imageBuffer);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @UseGuards(JwtAdminGuard)

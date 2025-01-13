@@ -1,6 +1,7 @@
 import { IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator';
 
 export interface Color {
+  _id: string;
   name: string;
   hex: string;
   stock: number;

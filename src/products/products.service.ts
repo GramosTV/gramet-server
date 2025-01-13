@@ -47,6 +47,24 @@ export class ProductsService {
     return { products, pageCount };
   }
 
+  async getImage(id: string): Promise<string> {
+    try {
+      const products = await this.productModel
+        .aggregate([
+          { $match: { public: true, _id: new Types.ObjectId(id) } },
+          {
+            $project: {
+              image: { $arrayElemAt: ['$images', 0] },
+            },
+          },
+        ])
+        .exec();
+      return products[0].image;
+    } catch (error) {
+      throw new NotFoundException(`Image with product ID ${id} not found`);
+    }
+  }
+
   async findForCart(
     data: CartItem[],
   ): Promise<
@@ -66,7 +84,7 @@ export class ProductsService {
             {
               $project: {
                 name: 1,
-                image: { $arrayElemAt: ['$images', 0] },
+                // image: { $arrayElemAt: ['$images', 0] },
                 price: 1,
                 colors: 1,
               },
@@ -74,6 +92,7 @@ export class ProductsService {
           ])
           .exec()
       )[0];
+
       res.quantity = e.quantity;
       return res;
     });
@@ -117,6 +136,14 @@ export class ProductsService {
     const product = await this.productModel.findById(id);
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+    return product;
+  }
+
+  async findOneByName(name: string): Promise<Product> {
+    const product = await this.productModel.findOne({ name });
+    if (!product) {
+      throw new NotFoundException(`Product with name ${name} not found`);
     }
     return product;
   }

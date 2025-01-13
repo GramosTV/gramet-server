@@ -9,6 +9,7 @@ import { RefreshTokensModule } from './refresh-tokens/refresh-tokens.module';
 import { ProductsModule } from './products/products.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { CartModule } from './cart/cart.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CartModule } from './cart/cart.module';
     ProductsModule,
     TransactionsModule,
     CartModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

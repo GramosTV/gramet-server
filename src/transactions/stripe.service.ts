@@ -25,9 +25,7 @@ export class StripeService {
         return {
           price_data: {
             currency: 'pln',
-            product_data: {
-              name: product.name,
-            },
+            product_data: { name: product.name },
             unit_amount: product.price * 100,
           },
           quantity: 1,
@@ -38,7 +36,22 @@ export class StripeService {
     const session = await this.stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${process.env.CLIENT_URL}/succes`,
+      shipping_address_collection: {
+        allowed_countries: ['PL'],
+      },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            display_name: 'Standard shipping',
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 11,
+              currency: 'pln',
+            },
+          },
+        },
+      ],
+      success_url: `${process.env.CLIENT_URL}/success`,
       cancel_url: `${process.env.CLIENT_URL}/cancel`,
     });
 

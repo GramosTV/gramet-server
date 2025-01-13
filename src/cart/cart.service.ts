@@ -26,12 +26,17 @@ export class CartService {
     id: string,
     productId: string,
     quantity: number,
-    colorId: string,
+    colorId?: string,
   ) {
     let cart = await this.cartModel.findOne({ userId: id }).exec();
     if (!cart) {
       cart = new this.cartModel({ userId: id });
       await cart.save();
+    }
+    if (!colorId) {
+      const product = await this.productsService.findOne(productId);
+      colorId = product.colors[0]._id.toString();
+      console.log(colorId);
     }
     const existingItemIndex = cart.items.findIndex(
       (item) => item.productId === productId && item.colorId === colorId,

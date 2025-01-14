@@ -130,4 +130,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
+
+  async verifyEmail(token: string) {
+    try {
+      const decoded = await this.jwtService.verify(token, {
+        secret: process.env.JWT_MAIL_SECRET,
+      });
+      const user = await this.usersService.findOneById(decoded.userId);
+      user.activated = true;
+      await user.save();
+      return { message: 'Email verified' };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
 }

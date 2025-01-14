@@ -25,6 +25,9 @@ export class User {
   @Prop({ default: Roles.CUSTOMER, enum: Roles })
   role: string;
 
+  @Prop({ default: false })
+  activated: boolean;
+
   @Prop({ default: Date.now })
   createdAt: Date;
 

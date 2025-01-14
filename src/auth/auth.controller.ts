@@ -25,23 +25,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@Req() req: Request, @Res() res: Response) {
-    try {
-      const { accessToken, refreshToken } = await this.authService.login(
-        req.user,
-      );
+    const { accessToken, refreshToken } = await this.authService.login(
+      req.user,
+    );
 
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-      });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+    });
 
-      return res.send({ accessToken });
-    } catch (error) {
-      return res
-        .status(HttpStatus.UNAUTHORIZED)
-        .send({ message: 'Something went wrong, please try again' });
-    }
+    return res.send({ accessToken });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -62,5 +56,11 @@ export class AuthController {
   async refreshToken(@Req() request: Request) {
     const refreshToken = request.cookies['refreshToken'];
     return await this.authService.refreshToken(refreshToken);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('verify-email')
+  async verifyEmail(@Body() { token }) {
+    return await this.authService.verifyEmail(token);
   }
 }

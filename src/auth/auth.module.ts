@@ -9,6 +9,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshTokensModule } from 'src/refresh-tokens/refresh-tokens.module';
 import { JwtAdminStrategy } from './strategies/jwt-admin.strategy';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { JwtAdminStrategy } from './strategies/jwt-admin.strategy';
     RefreshTokensModule,
     ConfigModule.forRoot(),
     JwtModule,
+    MailModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtAdminStrategy],
   controllers: [AuthController],

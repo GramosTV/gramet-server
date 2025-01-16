@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -39,10 +40,11 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('logout')
+  @Delete('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() req: Request & { user: JwtAccessPayload }) {
-    return await this.authService.logout(req.user.sub);
+  async logout(@Req() req: Request) {
+    const refreshToken = req.cookies['refreshToken'];
+    return await this.authService.logout(refreshToken);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -53,8 +55,8 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
-  async refreshToken(@Req() request: Request) {
-    const refreshToken = request.cookies['refreshToken'];
+  async refreshToken(@Req() req: Request) {
+    const refreshToken = req.cookies['refreshToken'];
     return await this.authService.refreshToken(refreshToken);
   }
 
@@ -62,5 +64,17 @@ export class AuthController {
   @Post('verify-email')
   async verifyEmail(@Body() { token }) {
     return await this.authService.verifyEmail(token);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('forgot-password')
+  async forgotPassword(@Body() { email }) {
+    return await this.authService.forgotPassword(email);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('reset-password')
+  async resetPassword(@Body() { token, password }) {
+    return await this.authService.resetPassword(token, password);
   }
 }

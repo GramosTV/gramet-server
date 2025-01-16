@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   BadRequestException,
   InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -14,6 +15,7 @@ import {
   JwtRefreshPayload,
 } from 'src/common/interfaces/jwtPayload';
 import { User } from 'src/users/schemas/user.schema';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +23,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private refreshTokensService: RefreshTokensService,
+    private mailService: MailService,
   ) {}
 
   generateAccessToken(payload: JwtAccessPayload): string {
@@ -65,17 +68,20 @@ export class AuthService {
       if (!user) {
         throw new Error();
       }
-
+      if (!user.activated) {
+        throw new UnauthorizedException('Please verify your email address');
+      }
       const isMatch = await bcrypt.compare(pass, user.password);
       if (!isMatch) {
         throw new Error();
       }
-
       const { password, ...result } = user;
       return result;
     } catch (error) {
-      console.log(error);
-      throw new UnauthorizedException('Invalid credentials');
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new ForbiddenException('Invalid credentials');
     }
   }
 
@@ -142,6 +148,48 @@ export class AuthService {
       return { message: 'Email verified' };
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  async forgotPassword(email: string) {
+    try {
+      const user = await this.usersService.findOne(email);
+      if (user) {
+        await this.mailService.sendPasswordResetEmail(
+          email,
+          this.jwtService.sign(
+            { userId: user._id },
+            {
+              expiresIn: '1h',
+              secret: process.env.JWT_PASSWORD_SECRET,
+            },
+          ),
+        );
+      }
+      return 'ok';
+    } catch (error) {
+      return 'ok';
+    }
+  }
+
+  async resetPassword(token: string, password: string) {
+    try {
+      const decoded = await this.jwtService.verify(token, {
+        secret: process.env.JWT_PASSWORD_SECRET,
+      });
+      const user = await this.usersService.findOneById(decoded.userId);
+      if (!user) {
+        throw new UnauthorizedException('Invalid token');
+      }
+      user.password = await bcrypt.hash(password, 12);
+      await user.save();
+      return { message: 'Password reset successful' };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      console.log(error);
+      throw new InternalServerErrorException('Error resetting password');
     }
   }
 }

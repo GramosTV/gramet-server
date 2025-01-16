@@ -18,9 +18,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new ForbiddenException();
     }
-    if (!user.activated) {
-      throw new UnauthorizedException('Please verify your email address');
-    }
     return user;
   }
 }

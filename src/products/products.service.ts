@@ -9,6 +9,7 @@ import { Category } from 'src/common/enums/category';
 import { map } from 'async';
 import { CartItem } from 'src/cart/schemas/cart.schema';
 import { CartItemForUser } from 'src/common/interfaces/cartItemForUser';
+import { formatURL } from 'src/lib/utils';
 
 @Injectable()
 export class ProductsService {
@@ -38,6 +39,7 @@ export class ProductsService {
             name: 1,
             image: { $arrayElemAt: ['$images', 0] },
             price: 1,
+            url: 1,
           },
         },
         { $skip: (page - 1) * limit },
@@ -125,8 +127,9 @@ export class ProductsService {
   }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const createdProduct = new this.productModel(createProductDto);
-    return createdProduct.save();
+    const product = new this.productModel(createProductDto);
+    product.url = formatURL(product.name)
+    return product.save();
   }
 
   async findOne(id: string): Promise<Product> {
@@ -137,10 +140,10 @@ export class ProductsService {
     return product;
   }
 
-  async findOneByName(name: string): Promise<Product> {
-    const product = await this.productModel.findOne({ name });
+  async findOneByUrl(url: string): Promise<Product> {
+    const product = await this.productModel.findOne({ url });
     if (!product) {
-      throw new NotFoundException(`Product with name ${name} not found`);
+      throw new NotFoundException(`Product with name ${url} not found`);
     }
     return product;
   }
@@ -155,6 +158,7 @@ export class ProductsService {
     }
 
     Object.assign(product, updateProductDto);
+    product.url = formatURL(product.name)
     return product.save();
   }
 

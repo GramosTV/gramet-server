@@ -13,6 +13,9 @@ export class Product {
   name: string;
 
   @Prop({ required: true })
+  url: string;
+
+  @Prop({ required: true })
   brand: string;
 
   @Prop({ required: true })

@@ -67,7 +67,7 @@ export class ProductsController {
 
   @Get('/by-name/:name')
   async findOneByName(@Param('name') name: string) {
-    return await this.productService.findOneByName(name);
+    return await this.productService.findOneByUrl(name);
   }
 
   @Get('/image/:id')

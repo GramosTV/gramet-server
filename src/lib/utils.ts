@@ -9,3 +9,8 @@ export const compressImage = async (base64Image: string) => {
   const compressedBuffer = await sharp(buffer).jpeg({ quality: 80 }).toBuffer();
   return compressedBuffer.toString('base64');
 };
+
+
+export function formatURL(url: string): string {
+  return url.replace(/\s+/g, '-').replace(/,/g, '').toLowerCase();
+}

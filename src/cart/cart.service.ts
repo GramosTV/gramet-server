@@ -65,4 +65,13 @@ export class CartService {
     await cart.save();
     return { itemData: items };
   }
+
+  async clearCart(userId: string) {
+    const cart = await this.cartModel.findOne({ userId }).exec();
+    if (cart) {
+      cart.items = [];
+      await cart.save();
+    }
+    return cart;
+  }
 }

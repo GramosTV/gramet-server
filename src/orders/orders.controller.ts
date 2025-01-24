@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -14,7 +12,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { JwtAccessPayload } from 'src/common/interfaces/jwtPayload';
-// import { UpdateOrderDto } from './dto/update-order.dto';
+import { JwtAdminGuard } from 'src/auth/guards/jwt-admin.guards';
 
 @Controller('orders')
 export class OrdersController {
@@ -34,23 +32,20 @@ export class OrdersController {
     return { url: res.url };
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.ordersService.findAll();
-  // }
+  @Get('/findById/:id')
+  async findOne(@Param('id') id: string) {
+    return await this.ordersService.findOne(id);
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.ordersService.findOne(+id);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get('/all')
+  async findAllByUserId(@Req() req: Request & { user: JwtAccessPayload }) {
+    return await this.ordersService.findAllByUserId(req.user.sub);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-  //   return this.ordersService.update(+id, updateOrderDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.ordersService.remove(+id);
-  // }
+  @UseGuards(JwtAdminGuard)
+  @Get('/allForAdmin')
+  async findAllForAdmin() {
+    return await this.ordersService.findAllForAdmin();
+  }
 }

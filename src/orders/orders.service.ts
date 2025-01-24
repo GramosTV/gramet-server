@@ -50,21 +50,49 @@ export class OrdersService {
     }
   }
 
-  // findAll() {
-  //   return `This action returns all orders`;
-  // }
 
   async complete(transactionId: string) {
     const order = await this.orderModel.findOne({ transactionId }).exec();
     order.paymentStatus = PaymentStatus.COMPLETED;
-    await order.save();
+    return await order.save();
   }
 
-  // update(id: number, updateOrderDto: UpdateOrderDto) {
-  //   return `This action updates a #${id} order`;
-  // }
+  async findOne(orderId: string) {
+    try {
+      const order = await this.orderModel.findOne({ _id: orderId }).exec();
+      if (!order) {
+        throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+      }
+      return order;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to retrieve order',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} order`;
-  // }
+  async findAllByUserId(userId: string) {
+    try {
+      const orders = await this.orderModel.find({ userId }).exec();
+      return orders;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to retrieve orders',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findAllForAdmin() {
+    try {
+      const orders = await this.orderModel.find().exec();
+      return orders;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to retrieve orders',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

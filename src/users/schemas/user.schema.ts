@@ -5,7 +5,7 @@ import { Color } from 'src/products/schemas/color.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema({timestamps: true})
 export class User {
   @Prop({ required: true })
   name: string;
@@ -27,12 +27,6 @@ export class User {
 
   @Prop({ default: false })
   activated: boolean;
-
-  @Prop({ default: Date.now })
-  createdAt: Date;
-
-  @Prop()
-  updatedAt: Date;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Cart' }], default: [] })
   cart: Types.ObjectId[];

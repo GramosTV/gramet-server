@@ -7,6 +7,8 @@ import { StripeService } from './stripe.service';
 import { ProductsService } from 'src/products/products.service';
 import { ProductsModule } from 'src/products/products.module';
 import { OrdersModule } from 'src/orders/orders.module';
+import { CartService } from 'src/cart/cart.service';
+import { CartModule } from 'src/cart/cart.module';
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { OrdersModule } from 'src/orders/orders.module';
     ]),
     ProductsModule,
     forwardRef(() => OrdersModule),
+    CartModule,
   ],
   controllers: [TransactionsController],
   providers: [TransactionsService, StripeService],

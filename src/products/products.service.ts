@@ -168,4 +168,25 @@ export class ProductsService {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
   }
+
+  async decreaseStock(cartItems: CartItem[]): Promise<void> {
+    for (const item of cartItems) {
+      const product = await this.productModel.findOne({
+        _id: new Types.ObjectId(item.productId),
+        'colors._id': new Types.ObjectId(item.colorId),
+      });
+  
+      if (!product) {
+        throw new NotFoundException(`Product with ID ${item.productId} not found`);
+      }
+  
+      const color = product.colors.find(color => color._id === item.colorId);
+      if (color.stock < item.quantity) {
+        throw new Error(`Insufficient stock for product ID ${item.productId} and color ID ${item.colorId}`);
+      }
+  
+      color.stock -= item.quantity;
+      await product.save();
+    }
+  }
 }

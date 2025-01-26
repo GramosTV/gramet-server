@@ -128,7 +128,7 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const product = new this.productModel(createProductDto);
-    product.url = formatURL(product.name)
+    product.url = formatURL(product.name);
     return product.save();
   }
 
@@ -142,7 +142,7 @@ export class ProductsService {
 
   async findOneByUrl(url: string): Promise<Product> {
     const product = await this.productModel.findOne({ url });
-    if (!product) {
+    if (!product || !product.public) {
       throw new NotFoundException(`Product with name ${url} not found`);
     }
     return product;
@@ -158,7 +158,7 @@ export class ProductsService {
     }
 
     Object.assign(product, updateProductDto);
-    product.url = formatURL(product.name)
+    product.url = formatURL(product.name);
     return product.save();
   }
 
@@ -175,16 +175,20 @@ export class ProductsService {
         _id: new Types.ObjectId(item.productId),
         'colors._id': new Types.ObjectId(item.colorId),
       });
-  
+
       if (!product) {
-        throw new NotFoundException(`Product with ID ${item.productId} not found`);
+        throw new NotFoundException(
+          `Product with ID ${item.productId} not found`,
+        );
       }
-  
-      const color = product.colors.find(color => color._id === item.colorId);
+
+      const color = product.colors.find((color) => color._id === item.colorId);
       if (color.stock < item.quantity) {
-        throw new Error(`Insufficient stock for product ID ${item.productId} and color ID ${item.colorId}`);
+        throw new Error(
+          `Insufficient stock for product ID ${item.productId} and color ID ${item.colorId}`,
+        );
       }
-  
+
       color.stock -= item.quantity;
       await product.save();
     }

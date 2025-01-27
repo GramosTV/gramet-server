@@ -38,6 +38,9 @@ export class Product {
 
   @Prop({ required: true, default: false })
   public: boolean;
+
+  @Prop()
+  obj: string;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

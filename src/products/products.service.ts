@@ -193,4 +193,17 @@ export class ProductsService {
       await product.save();
     }
   }
+
+  async getObjFile(id: string): Promise<string> {
+    const productRecord = await this.productModel.findById(id);
+    if (!productRecord) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+    if (!productRecord.obj) {
+      throw new NotFoundException(
+        `OBJ file not found for product with ID ${id}`,
+      );
+    }
+    return productRecord.obj;
+  }
 }

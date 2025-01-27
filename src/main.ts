@@ -14,7 +14,8 @@ async function bootstrap() {
     '/transactions/stripe/webhook',
     bodyParser.raw({ type: 'application/json' }),
   );
-  app.use(bodyParser.json({ limit: '50mb' })); // Adjust the size as needed
+  app.enableCors({ origin: process.env.CLIENT_URL });
+  app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   app.use(cookieParser());
   await app.listen(process.env.PORT ?? 3001);

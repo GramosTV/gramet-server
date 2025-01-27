@@ -14,6 +14,7 @@ import {
   Patch,
   Delete,
   Res,
+  Header,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -60,10 +61,10 @@ export class ProductsController {
     return await this.productService.findForAdmin(page, limit);
   }
 
-  // @Get('/:id')
-  // async findOne(@Param('id') id: string) {
-  //   return await this.productService.findOne(id);
-  // }
+  @Get('/byId/:id')
+  async findOne(@Param('id') id: string) {
+    return await this.productService.findOne(id);
+  }
 
   @Get('/by-name/:name')
   async findOneByName(@Param('name') name: string) {
@@ -84,11 +85,16 @@ export class ProductsController {
 
   @UseGuards(JwtAdminGuard)
   @Post()
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 10 }]))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'images', maxCount: 10 },
+      { name: 'objFile', maxCount: 1 },
+    ]),
+  )
   async create(
     @UploadedFiles(new ParseFilePipe({ fileIsRequired: true }))
-    files: { images: Express.Multer.File[] },
-    @Body() product: Omit<Product, 'images'>,
+    files: { images: Express.Multer.File[]; objFile?: Express.Multer.File[] },
+    @Body() product: Omit<Product, 'images' | 'objFile'>,
   ) {
     product.colors = JSON.parse((product as any).colors);
     product.materials = JSON.parse((product as any).materials);
@@ -97,42 +103,66 @@ export class ProductsController {
       async (file: Express.Multer.File) =>
         await compressImage(convertToBase64(file)),
     );
-    const productWithImages = {
+    const objFileBase64 = files.objFile
+      ? convertToBase64(files.objFile[0])
+      : undefined;
+    const productWithFiles = {
       ...product,
       images: imagesBase64,
+      obj: objFileBase64,
     };
-    return await this.productService.create(productWithImages);
+    return await this.productService.create(productWithFiles);
   }
 
   @UseGuards(JwtAdminGuard)
   @Put(':id')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 10 }]))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'images', maxCount: 10 },
+      { name: 'objFile', maxCount: 1 },
+    ]),
+  )
   async upate(
     @UploadedFiles(new ParseFilePipe({ fileIsRequired: false }))
-    files: { images: Express.Multer.File[] },
+    files: { images: Express.Multer.File[]; objFile?: Express.Multer.File[] },
     @Param('id') id: string,
     @Body() product: Omit<Product, 'images'>,
   ) {
-    product.colors = JSON.parse((product as any).colors);
-    product.materials = JSON.parse((product as any).materials);
-    const imagesBase64 = await map(
-      files.images,
-      async (file: Express.Multer.File) =>
-        await compressImage(convertToBase64(file)),
-    );
-    const productWithImages = {
-      ...product,
-      images: imagesBase64,
-    };
-    return await this.productService.update(
-      id,
-      files.images ? productWithImages : product,
-    );
+    try {
+      product.colors = JSON.parse((product as any).colors);
+      product.materials = JSON.parse((product as any).materials);
+      const imagesBase64 = await map(
+        files.images,
+        async (file: Express.Multer.File) =>
+          await compressImage(convertToBase64(file)),
+      );
+      const objFileBase64 = files.objFile
+        ? convertToBase64(files.objFile[0])
+        : undefined;
+
+      const productWithFiles = {
+        ...product,
+        ...(imagesBase64.length > 0 && { images: imagesBase64 }),
+        ...(objFileBase64 && { obj: objFileBase64 }),
+      };
+      return await this.productService.update(id, productWithFiles);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   @UseGuards(JwtAdminGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.productService.remove(id);
+  }
+
+  @Get('/obj/:id.obj')
+  async getObjFile(@Param('id') id: string, @Res() res: Response) {
+    const objBase64 = await this.productService.getObjFile(id);
+    const file = Buffer.from(objBase64, 'base64');
+    res.setHeader('Content-Type', 'model/obj');
+    res.setHeader('Content-Disposition', `attachment; filename="${id}.obj"`);
+    res.send(file);
   }
 }

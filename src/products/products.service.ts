@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Product, ProductDocument } from './schemas/product.schema';
@@ -10,30 +15,41 @@ import { map } from 'async';
 import { CartItem } from 'src/cart/schemas/cart.schema';
 import { CartItemForUser } from 'src/common/interfaces/cartItemForUser';
 import { formatURL } from 'src/lib/utils';
+import { CartService } from 'src/cart/cart.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectModel(Product.name)
     private readonly productModel: Model<ProductDocument>,
+    @Inject(forwardRef(() => CartService))
+    private readonly cartService: CartService,
   ) {}
 
   async find(
     page: number,
     limit: number,
     category: Category | undefined,
+    minPrice: number,
+    maxPrice: number,
   ): Promise<{
     products: { name: string; image: string }[];
     pageCount: number;
+    totalCount: number;
   }> {
-    const matchStage = category ? { public: true, category } : { public: true };
-
-    const totalCount = await this.productModel.countDocuments(matchStage);
+    const baseMatch: any = {
+      public: true,
+      price: { $gte: minPrice, $lte: maxPrice },
+    };
+    if (category) {
+      baseMatch.category = category;
+    }
+    const totalCount = await this.productModel.countDocuments(baseMatch);
     const pageCount = Math.ceil(totalCount / limit);
 
     const products = await this.productModel
       .aggregate([
-        { $match: matchStage },
+        { $match: baseMatch },
         {
           $project: {
             name: 1,
@@ -47,7 +63,7 @@ export class ProductsService {
       ])
       .exec();
 
-    return { products, pageCount };
+    return { products, pageCount, totalCount };
   }
 
   async getImage(id: string): Promise<string> {
@@ -69,6 +85,7 @@ export class ProductsService {
   }
 
   async findForCart(data: CartItem[]): Promise<CartItemForUser[]> {
+    console.log(data.length);
     const products = await map(data, async (e: CartItem) => {
       const res = await (
         await this.productModel
@@ -91,11 +108,10 @@ export class ProductsService {
           ])
           .exec()
       )[0];
-
       res.quantity = e.quantity;
       return res;
     });
-    return products;
+    return products.filter((product) => product !== null);
   }
 
   async findForAdmin(
@@ -156,7 +172,9 @@ export class ProductsService {
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
-
+    if (product.public && !updateProductDto.public) {
+      await this.cartService.removeProductFromCarts(id);
+    }
     Object.assign(product, updateProductDto);
     product.url = formatURL(product.name);
     return product.save();
@@ -167,6 +185,7 @@ export class ProductsService {
     if (!result) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
+    await this.cartService.removeProductFromCarts(id);
   }
 
   async decreaseStock(cartItems: CartItem[]): Promise<void> {

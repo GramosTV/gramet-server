@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cart, CartDocument } from './schemas/cart.schema';
 import { ProductsService } from 'src/products/products.service';
+import { forEach } from 'async';
 
 @Injectable()
 export class CartService {
   constructor(
     @InjectModel(Cart.name) private cartModel: Model<CartDocument>,
+    @Inject(forwardRef(() => ProductsService))
     private readonly productsService: ProductsService,
   ) {}
   async getCart(id: string) {
@@ -73,5 +75,13 @@ export class CartService {
       await cart.save();
     }
     return cart;
+  }
+
+  async removeProductFromCarts(productId: string) {
+    const carts = await this.cartModel.find({}).exec();
+    await forEach(carts, async (cart) => {
+      cart.items = cart.items.filter((item) => item.productId !== productId);
+      await cart.save();
+    });
   }
 }

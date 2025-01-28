@@ -39,6 +39,8 @@ export class ProductsController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('category') category: Category,
+    @Query('minPrice') minPrice: number = 0,
+    @Query('maxPrice') maxPrice: number = Infinity,
   ) {
     if (limit > 50) {
       throw new BadRequestException('Limit must be less than 50');
@@ -46,7 +48,19 @@ export class ProductsController {
     if (category && !Object.values(Category).includes(category)) {
       category = undefined;
     }
-    return await this.productService.find(page, limit, category);
+    if (!minPrice) {
+      minPrice = 0;
+    }
+    if (!maxPrice) {
+      maxPrice = Infinity;
+    }
+    return await this.productService.find(
+      page,
+      limit,
+      category,
+      minPrice,
+      maxPrice,
+    );
   }
 
   @UseGuards(JwtAdminGuard)

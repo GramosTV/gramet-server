@@ -42,14 +42,12 @@ export class OrdersService {
       await createdOrder.save();
       return { url };
     } catch (error) {
-      console.log(error);
       throw new HttpException(
         'Failed to place order',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
-
 
   async complete(transactionId: string) {
     const order = await this.orderModel.findOne({ transactionId }).exec();

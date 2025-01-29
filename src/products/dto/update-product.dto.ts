@@ -22,6 +22,10 @@ export class UpdateProductDto {
 
   @IsString()
   @IsOptional()
+  enName?: string;
+
+  @IsString()
+  @IsOptional()
   brand?: string;
 
   @ValidateNested({ each: true })

@@ -53,6 +53,7 @@ export class ProductsService {
         {
           $project: {
             name: 1,
+            enName: 1,
             image: { $arrayElemAt: ['$images', 0] },
             price: 1,
             url: 1,
@@ -85,7 +86,6 @@ export class ProductsService {
   }
 
   async findForCart(data: CartItem[]): Promise<CartItemForUser[]> {
-    console.log(data.length);
     const products = await map(data, async (e: CartItem) => {
       const res = await (
         await this.productModel
@@ -100,6 +100,7 @@ export class ProductsService {
             {
               $project: {
                 name: 1,
+                enName: 1,
                 // image: { $arrayElemAt: ['$images', 0] },
                 price: 1,
                 colors: 1,

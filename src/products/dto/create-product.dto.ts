@@ -22,6 +22,10 @@ export class CreateProductDto {
 
   @IsString()
   @IsNotEmpty()
+  enName: string;
+
+  @IsString()
+  @IsNotEmpty()
   code: string;
 
   @IsString()

@@ -32,9 +32,9 @@ export class StripeService {
   }
 
   async createCheckoutSession(email: string, items: CartItem[]) {
-    const lineItems = await map(items, async (cartItem: CartItem) => {
+    const itemsData = await map(items, async (cartItem: CartItem) => {
       const product = await this.productsService.findOne(cartItem.productId);
-      return {
+      const lineItem = {
         price_data: {
           currency: 'pln',
           product_data: {
@@ -44,15 +44,16 @@ export class StripeService {
         },
         quantity: cartItem.quantity,
       };
+      return { lineItem, product };
     });
+
+    const lineItems = itemsData.map((item) => item.lineItem);
+    const products = itemsData.map((item) => item.product);
 
     const session = await this.stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'payment',
       customer_email: email,
-      // shipping_address_collection: {
-      //   allowed_countries: ['PL'],
-      // },
       shipping_options: [
         {
           shipping_rate_data: {
@@ -68,7 +69,7 @@ export class StripeService {
       success_url: `${process.env.CLIENT_URL}/`,
       cancel_url: `${process.env.CLIENT_URL}/checkout`,
     });
-    return { url: session.url, id: session.id };
+    return { url: session.url, id: session.id, products };
   }
 
   async handleCheckoutWebhook(request: Request, body: any) {
@@ -82,7 +83,6 @@ export class StripeService {
       if (event.type === 'checkout.session.completed') {
         const order = await this.ordersService.complete(event.data.object.id);
         await this.productsService.decreaseStock(order.items);
-        await this.cartService.clearCart(order.userId);
       } else {
         throw new HttpException('Invalid event type', HttpStatus.BAD_REQUEST);
       }

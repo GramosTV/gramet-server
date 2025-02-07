@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateOrderDto {
   @IsNotEmpty()
@@ -18,7 +24,7 @@ export class CreateOrderDto {
 
   @IsOptional()
   @IsString()
-  @Length(1, 10)
+  @MaxLength(10)
   apartmentNumber?: string;
 
   @IsNotEmpty()

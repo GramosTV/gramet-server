@@ -12,6 +12,9 @@ export class CartItem {
 
   @Prop({ required: true, min: 1 })
   quantity: number;
+
+  @Prop()
+  priceAtTimeOfOrder?: number;
 }
 
 export const CartItemSchema = SchemaFactory.createForClass(CartItem);

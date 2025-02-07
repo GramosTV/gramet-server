@@ -8,10 +8,11 @@ import {
 import { CreateOrderDto } from './dto/create-order.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Order, OrderDocument } from './schemas/order.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { StripeService } from 'src/transactions/stripe.service';
 import { CartService } from 'src/cart/cart.service';
 import { PaymentStatus } from 'src/common/enums/status';
+import { Product } from 'src/products/schemas/product.schema';
 // import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
@@ -34,14 +35,22 @@ export class OrdersService {
         userId,
         items: cart.items,
       });
-      const { url, id } = await this.stripeService.createCheckoutSession(
-        email,
-        cart.items,
-      );
+      const { url, id, products } =
+        await this.stripeService.createCheckoutSession(email, cart.items);
       createdOrder.transactionId = id;
+      createdOrder.items.forEach((item) => {
+        const product = products.find(
+          (p: Product & { _id: Types.ObjectId }) => {
+            return p._id.equals(new Types.ObjectId(item.productId));
+          },
+        );
+        item.priceAtTimeOfOrder = product.price;
+      });
       await createdOrder.save();
+      await this.cartService.clearCart(userId);
       return { url };
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Failed to place order',
         HttpStatus.INTERNAL_SERVER_ERROR,

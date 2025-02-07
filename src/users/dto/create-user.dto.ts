@@ -3,14 +3,10 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsEnum,
-  IsArray,
-  ValidateNested,
   Min,
   Max,
   Length,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 class CreateCartItemDto {
   @IsNotEmpty()

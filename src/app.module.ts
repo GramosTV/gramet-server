@@ -11,11 +11,15 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
 import { MailModule } from './mail/mail.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.DB_URL),
+    CacheModule.register({
+      isGlobal: true,
+    }),
     UsersModule,
     AuthModule,
     RefreshTokensModule,

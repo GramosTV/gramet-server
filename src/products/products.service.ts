@@ -37,7 +37,11 @@ export class ProductsService {
     pageCount: number;
     totalCount: number;
   }> {
-    const baseMatch: any = {
+    const baseMatch: {
+      public: boolean;
+      price: { $gte: number; $lte: number };
+      category?: Category;
+    } = {
       public: true,
       price: { $gte: minPrice, $lte: maxPrice },
     };

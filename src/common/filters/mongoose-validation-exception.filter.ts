@@ -15,7 +15,7 @@ export class MongooseValidationExceptionFilter implements ExceptionFilter {
 
     const errors = Object.entries(exception.errors).map(([key, error]) => ({
       field: key,
-      message: (error as any).message,
+      message: error.message,
     }));
 
     response.status(status).json({

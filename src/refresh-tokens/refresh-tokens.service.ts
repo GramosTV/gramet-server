@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import {
   RefreshToken,
   RefreshTokenDocument,
@@ -19,7 +19,7 @@ export class RefreshTokensService {
   ) {}
 
   async create(
-    userId: string,
+    userId: Types.ObjectId,
     payload: JwtRefreshPayload,
     jti: string,
   ): Promise<string> {

@@ -15,6 +15,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request } from 'express';
+import { UserDocument } from 'src/users/schemas/user.schema';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +26,7 @@ export class AuthController {
   @Post('login')
   async login(@Req() req: Request, @Res() res: Response) {
     const { accessToken, refreshToken } = await this.authService.login(
-      req.user,
+      req.user as UserDocument,
     );
 
     res.cookie('refreshToken', refreshToken, {

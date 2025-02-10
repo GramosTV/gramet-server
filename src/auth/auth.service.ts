@@ -13,7 +13,7 @@ import {
   JwtAccessPayload,
   JwtRefreshPayload,
 } from 'src/common/interfaces/jwtPayload';
-import { User } from 'src/users/schemas/user.schema';
+import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
@@ -84,12 +84,12 @@ export class AuthService {
     }
   }
 
-  async login(user: any) {
+  async login(user: UserDocument) {
     try {
       const jti = uuidv4();
       const payload = {
         email: user.email,
-        sub: user._id,
+        sub: user._id.toString(),
         jti,
         role: user.role,
       };

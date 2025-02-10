@@ -22,7 +22,7 @@ export class User {
   phoneNumber: string;
 
   @Prop({ default: Roles.CUSTOMER, enum: Roles })
-  role: string;
+  role: Roles;
 
   @Prop({ default: false })
   activated: boolean;

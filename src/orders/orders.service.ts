@@ -11,7 +11,7 @@ import { Order, OrderDocument } from './schemas/order.schema';
 import { Model, Types } from 'mongoose';
 import { StripeService } from 'src/transactions/stripe.service';
 import { CartService } from 'src/cart/cart.service';
-import { DeliveryStatus, PaymentStatus } from 'src/common/enums/status';
+import { DeliveryStatus, PaymentStatus } from 'src/common/enums/status.enum';
 import { Product } from 'src/products/schemas/product.schema';
 import { ProductsService } from 'src/products/products.service';
 import { map } from 'async';

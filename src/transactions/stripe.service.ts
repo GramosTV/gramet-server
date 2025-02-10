@@ -13,7 +13,7 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { map } from 'async';
 import { ProductsService } from 'src/products/products.service';
 import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
-import { CartItemForUser } from 'src/common/interfaces/cartItemForUser';
+import { CartItemForUser } from 'src/common/interfaces/cart-item-for-user.interface';
 import { CartItem } from 'src/cart/schemas/cart.schema';
 import { OrdersService } from 'src/orders/orders.service';
 import { CartService } from 'src/cart/cart.service';

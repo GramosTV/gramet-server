@@ -1,14 +1,14 @@
-import { Roles } from '../enums/roles';
+import { Role } from '../enums/role.enum';
 
 export interface JwtAccessPayload {
   email: string;
   sub: string;
-  role: Roles;
+  role: Role;
 }
 
 export interface JwtRefreshPayload {
   email: string;
   sub: string;
   jti: string;
-  role: Roles;
+  role: Role;
 }

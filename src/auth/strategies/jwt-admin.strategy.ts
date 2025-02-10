@@ -2,8 +2,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { JwtAccessPayload } from 'src/common/interfaces/jwtPayload';
-import { Roles } from 'src/common/enums/roles';
+import { JwtAccessPayload } from 'src/common/interfaces/jwt.interface';
+import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class JwtAdminStrategy extends PassportStrategy(Strategy, 'admin') {
@@ -18,7 +18,7 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, 'admin') {
   async validate(payload: JwtAccessPayload): Promise<JwtAccessPayload> {
     const user = await this.usersService.findOne(payload.email);
 
-    if (user && user.role === Roles.ADMIN) {
+    if (user && user.role === Role.ADMIN) {
       return payload;
     } else {
       throw new Error('Unauthorized: User is not an admin');

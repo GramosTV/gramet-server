@@ -10,10 +10,10 @@ import { Product, ProductDocument } from './schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Color } from './schemas/color.schema';
-import { Category } from 'src/common/enums/category';
+import { Category } from 'src/common/enums/category.enum';
 import { map } from 'async';
 import { CartItem } from 'src/cart/schemas/cart.schema';
-import { CartItemForUser } from 'src/common/interfaces/cartItemForUser';
+import { CartItemForUser } from 'src/common/interfaces/cart-item-for-user.interface';
 import { formatURL } from 'src/lib/utils';
 import { CartService } from 'src/cart/cart.service';
 

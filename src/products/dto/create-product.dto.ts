@@ -9,9 +9,9 @@ import {
   ValidateNested,
   IsBoolean,
 } from 'class-validator';
-import { Category } from 'src/common/enums/category';
-import { Material } from 'src/common/enums/material';
-import { CreateColorDto } from 'src/common/interfaces/color';
+import { Category } from 'src/common/enums/category.enum';
+import { Material } from 'src/common/enums/material.enum';
+import { CreateColorDto } from 'src/common/interfaces/color.interface';
 
 export class CreateProductDto {
   @IsString()

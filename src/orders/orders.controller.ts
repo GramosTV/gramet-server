@@ -14,10 +14,10 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Request } from 'express';
-import { JwtAccessPayload } from 'src/common/interfaces/jwtPayload';
+import { JwtAccessPayload } from 'src/common/interfaces/jwt.interface';
 import { JwtAdminGuard } from 'src/auth/guards/jwt-admin.guards';
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
-import { Roles } from 'src/common/enums/roles';
+import { Role } from 'src/common/enums/role.enum';
 
 @Controller('orders')
 export class OrdersController {
@@ -52,7 +52,7 @@ export class OrdersController {
     return await this.ordersService.findOne(
       id,
       req.user.sub,
-      req.user.role === Roles.ADMIN,
+      req.user.role === Role.ADMIN,
     );
   }
 

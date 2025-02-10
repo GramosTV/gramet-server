@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { Material } from 'src/common/enums/material';
-import { Color } from 'src/common/interfaces/color';
+import { Material } from 'src/common/enums/material.enum';
+import { Color } from 'src/common/interfaces/color.interface';
 import { ColorSchema } from './color.schema';
-import { Category } from 'src/common/enums/category';
+import { Category } from 'src/common/enums/category.enum';
 
 export type ProductDocument = HydratedDocument<Product>;
 

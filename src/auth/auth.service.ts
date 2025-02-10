@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   JwtAccessPayload,
   JwtRefreshPayload,
-} from 'src/common/interfaces/jwtPayload';
+} from 'src/common/interfaces/jwt.interface';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { MailService } from 'src/mail/mail.service';
 
@@ -68,7 +68,7 @@ export class AuthService {
         throw new Error();
       }
       if (!user.activated) {
-        throw new Error();
+        throw new UnauthorizedException('Please verify your email address');
       }
       const isMatch = await bcrypt.compare(pass, user.password);
       if (!isMatch) {
@@ -178,7 +178,7 @@ export class AuthService {
       });
       const user = await this.usersService.findOneById(decoded.userId);
       if (!user) {
-        throw new Error();
+        throw new UnauthorizedException('Invalid token');
       }
       user.password = await bcrypt.hash(password, 12);
       await user.save();

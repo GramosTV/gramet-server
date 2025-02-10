@@ -22,7 +22,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { convertToBase64, compressImage } from 'src/lib/utils';
 import { map } from 'async';
 import { Product } from './schemas/product.schema';
-import { Category } from 'src/common/enums/category';
+import { Category } from 'src/common/enums/category.enum';
 import { Response } from 'express';
 
 @Controller('products')

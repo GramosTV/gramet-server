@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Req, UseGuards } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { JwtAccessPayload } from 'src/common/interfaces/jwtPayload';
+import { JwtAccessPayload } from 'src/common/interfaces/jwt.interface';
 import { Request } from 'express';
 import { AddToCartDto } from './dto/addToCart-dto';
 

@@ -1,4 +1,4 @@
-import { Color } from './color';
+import { Color } from './color.interface';
 
 export interface CartItemForUser {
   _id: string;

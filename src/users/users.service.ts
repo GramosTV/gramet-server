@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
@@ -28,7 +27,7 @@ export class UsersService {
         .lean()
         .exec();
       if (emailCheck) {
-        throw new ConflictException('Email already exists');
+        throw new Error();
       }
       const user = new this.userModel(createUserDto);
       user.password = await bcrypt.hash(createUserDto.password, 12);
@@ -45,10 +44,9 @@ export class UsersService {
         ),
       );
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException('Somethng went wrong');
     }
-    return 'ok';
+    return true;
   }
 
   findAll() {
@@ -70,13 +68,5 @@ export class UsersService {
       throw new NotFoundException(`User doesn't exist`);
     }
     return user;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }

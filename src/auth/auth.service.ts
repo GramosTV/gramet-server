@@ -44,12 +44,12 @@ export class AuthService {
 
       const token = await this.refreshTokensService.findOne(decoded.jti);
       if (!token || token.isRevoked || token.expiresAt < new Date()) {
-        throw new UnauthorizedException('Invalid or expired refresh token');
+        throw new Error();
       }
 
       const isValid = await bcrypt.compare(refreshToken, token.token);
       if (!isValid) {
-        throw new UnauthorizedException('Invalid refresh token');
+        throw new Error();
       }
 
       return decoded;
@@ -68,7 +68,7 @@ export class AuthService {
         throw new Error();
       }
       if (!user.activated) {
-        throw new UnauthorizedException('Please verify your email address');
+        throw new Error();
       }
       const isMatch = await bcrypt.compare(pass, user.password);
       if (!isMatch) {
@@ -165,9 +165,9 @@ export class AuthService {
           ),
         );
       }
-      return 'ok';
+      return true;
     } catch (error) {
-      return 'ok';
+      return true;
     }
   }
 
@@ -178,7 +178,7 @@ export class AuthService {
       });
       const user = await this.usersService.findOneById(decoded.userId);
       if (!user) {
-        throw new UnauthorizedException('Invalid token');
+        throw new Error();
       }
       user.password = await bcrypt.hash(password, 12);
       await user.save();
@@ -187,7 +187,6 @@ export class AuthService {
       if (error instanceof UnauthorizedException) {
         throw error;
       }
-      console.log(error);
       throw new InternalServerErrorException('Error resetting password');
     }
   }

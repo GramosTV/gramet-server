@@ -16,7 +16,6 @@ import { Product } from 'src/products/schemas/product.schema';
 import { ProductsService } from 'src/products/products.service';
 import { map } from 'async';
 import { CartItem } from 'src/cart/schemas/cart.schema';
-// import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -33,7 +32,7 @@ export class OrdersService {
     try {
       const cart = await this.cartService.getRawCart(userId);
       if (!cart.items.length) {
-        throw new HttpException('Cart is empty', HttpStatus.BAD_REQUEST);
+        throw new Error();
       }
       const createdOrder = new this.orderModel({
         ...createOrderDto,
@@ -77,7 +76,7 @@ export class OrdersService {
       const query = admin ? { _id: orderId } : { _id: orderId, userId };
       const order = await this.orderModel.findOne(query).exec();
       if (!order) {
-        throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+        throw new Error();
       }
       order.items = await map(order.items, async (item: CartItem) => {
         const product = await this.productsService.findOne(item.productId);
@@ -160,13 +159,10 @@ export class OrdersService {
     try {
       const order = await this.orderModel.findById(orderId).exec();
       if (!order) {
-        throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+        throw new Error();
       }
       if (order.deliveryStatus === DeliveryStatus.DISPATCHED) {
-        throw new HttpException(
-          'Order already dispatched',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new Error();
       }
       order.deliveryStatus = DeliveryStatus.DISPATCHED;
       await order.save();

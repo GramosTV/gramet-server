@@ -4,8 +4,6 @@ import {
   IsInt,
   IsPositive,
   IsArray,
-  ArrayMinSize,
-  IsUrl,
   IsNotEmpty,
   IsEnum,
   ValidateNested,
@@ -13,7 +11,7 @@ import {
 } from 'class-validator';
 import { Category } from 'src/common/enums/category';
 import { Material } from 'src/common/enums/material';
-import { Color, CreateColorDto } from 'src/common/interfaces/color';
+import { CreateColorDto } from 'src/common/interfaces/color';
 
 export class CreateProductDto {
   @IsString()

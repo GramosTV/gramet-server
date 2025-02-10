@@ -17,13 +17,8 @@ import {
   Header,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAdminGuard } from 'src/auth/guards/jwt-admin.guards';
-import {
-  FileFieldsInterceptor,
-  FilesInterceptor,
-} from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { convertToBase64, compressImage } from 'src/lib/utils';
 import { map } from 'async';
 import { Product } from './schemas/product.schema';

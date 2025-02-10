@@ -11,13 +11,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { SignInDto } from './dto/sign-in.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request } from 'express';
-import { JwtAccessPayload } from 'src/common/interfaces/jwtPayload';
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

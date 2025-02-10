@@ -6,7 +6,7 @@ import {
   RefreshTokenDocument,
 } from './schemas/refresh-token.schema';
 import * as bcrypt from 'bcrypt';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { JwtRefreshPayload } from 'src/common/interfaces/jwtPayload';
 import { JwtService } from '@nestjs/jwt';
 

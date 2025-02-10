@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { join } from 'path';
 import { MailService } from './mail.service';
 import { JwtModule } from '@nestjs/jwt';
 
@@ -24,7 +23,7 @@ import { JwtModule } from '@nestjs/jwt';
 
       template: {
         dir: process.cwd() + '/templates/',
-        adapter: new HandlebarsAdapter(), // Use Handlebars for templating
+        adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
         },

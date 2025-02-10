@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { Color } from 'src/products/schemas/color.schema';
 
 @Schema()
 export class CartItem {

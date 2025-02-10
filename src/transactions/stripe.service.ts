@@ -31,7 +31,11 @@ export class StripeService {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   }
 
-  async createCheckoutSession(email: string, items: CartItem[]) {
+  async createCheckoutSession(
+    email: string,
+    items: CartItem[],
+    orderId: string,
+  ) {
     const itemsData = await map(items, async (cartItem: CartItem) => {
       const product = await this.productsService.findOne(cartItem.productId);
       const lineItem = {
@@ -60,13 +64,13 @@ export class StripeService {
             display_name: 'Standardowa wysyłka',
             type: 'fixed_amount',
             fixed_amount: {
-              amount: 11,
+              amount: Number(process.env.FIXED_DELIVERY_COST),
               currency: 'pln',
             },
           },
         },
       ],
-      success_url: `${process.env.CLIENT_URL}/`,
+      success_url: `${process.env.CLIENT_URL}/orders/${orderId}`,
       cancel_url: `${process.env.CLIENT_URL}/checkout`,
     });
     return { url: session.url, id: session.id, products };

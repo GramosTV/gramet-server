@@ -41,7 +41,11 @@ export class OrdersService {
         items: cart.items,
       });
       const { url, id, products } =
-        await this.stripeService.createCheckoutSession(email, cart.items);
+        await this.stripeService.createCheckoutSession(
+          email,
+          cart.items,
+          createdOrder._id.toString(),
+        );
       createdOrder.transactionId = id;
       createdOrder.items.forEach((item) => {
         const product = products.find(

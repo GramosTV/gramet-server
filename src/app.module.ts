@@ -15,7 +15,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.DB_URL),
     CacheModule.register({
       isGlobal: true,

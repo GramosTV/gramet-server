@@ -58,6 +58,7 @@ export class OrdersService {
       await this.cartService.clearCart(userId);
       return { url };
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Failed to place order',
         HttpStatus.INTERNAL_SERVER_ERROR,

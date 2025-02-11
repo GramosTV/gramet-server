@@ -1,19 +1,13 @@
-// src/transactions/stripe.service.ts
 import {
   forwardRef,
   HttpException,
   HttpStatus,
   Inject,
   Injectable,
-  Request,
 } from '@nestjs/common';
-import { Product } from 'src/products/schemas/product.schema';
 import Stripe from 'stripe';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { map } from 'async';
 import { ProductsService } from 'src/products/products.service';
-import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
-import { CartItemForUser } from 'src/common/interfaces/cart-item-for-user.interface';
 import { CartItem } from 'src/cart/schemas/cart.schema';
 import { OrdersService } from 'src/orders/orders.service';
 import { CartService } from 'src/cart/cart.service';
@@ -64,7 +58,7 @@ export class StripeService {
             display_name: 'Standardowa wysyłka',
             type: 'fixed_amount',
             fixed_amount: {
-              amount: Number(process.env.FIXED_DELIVERY_COST),
+              amount: Number(process.env.FIXED_DELIVERY_COST) * 100,
               currency: 'pln',
             },
           },

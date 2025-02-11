@@ -16,7 +16,6 @@ import { MailModule } from 'src/mail/mail.module';
     UsersModule,
     PassportModule,
     RefreshTokensModule,
-    ConfigModule.forRoot(),
     JwtModule,
     MailModule,
   ],

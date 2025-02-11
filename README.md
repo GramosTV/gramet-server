@@ -19,8 +19,11 @@ Gramet is a NestJS-based backend for a scalable e-commerce solution. It includes
 - **Product Catalog** 📦
   Manage products with multiple images, colors, and materials ([`src/products/products.controller.ts`](src/products/products.controller.ts), [`src/products/products.service.ts`](src/products/products.service.ts)).
 
+- **Admin Product Management** 🛠️
+  Admins can add, update, hide and delete products ([`src/admin/products/admin-products.controller.ts`](src/admin/products/admin-products.controller.ts), [`src/admin/products/admin-products.service.ts`](src/admin/products/admin-products.service.ts)).
+
 - **Mailing Service** 📧
-  Send confirmation and password reset emails using Handlebars templates ([`src/mail/mail.service.ts`](src/mail/mail.service.ts), templates in [templates/confirmation.hbs](templates/confirmation.hbs) and [templates/reset-password.hbs](templates/reset-password.hbs)).
+  Send signup confirmation and password reset emails using Handlebars templates ([`src/mail/mail.service.ts`](src/mail/mail.service.ts), templates in [templates/confirmation.hbs](templates/confirmation.hbs) and [templates/reset-password.hbs](templates/reset-password.hbs)).
 
 - **Robust Validation & Error Handling** 🛡️
   Uses NestJS pipes and custom exception filters for mongoose validation ([`src/common/filters/mongoose-validation-exception.filter.ts`](src/common/filters/mongoose-validation-exception.filter.ts)).

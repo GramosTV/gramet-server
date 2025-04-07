@@ -10,11 +10,10 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { Request } from 'express';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserDocument } from 'src/users/schemas/user.schema';
 
 @Controller('auth')
@@ -24,15 +23,16 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Req() req: Request, @Res() res: Response) {
+  async login(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
     const { accessToken, refreshToken } = await this.authService.login(
       req.user as UserDocument,
     );
 
-    res.cookie('refreshToken', refreshToken, {
+    res.setCookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
+      path: '/',
     });
 
     return res.send({ accessToken });
@@ -41,20 +41,20 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Delete('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() req: Request) {
+  async logout(@Req() req: FastifyRequest) {
     const refreshToken = req.cookies['refreshToken'];
     return await this.authService.logout(refreshToken);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Req() req: Request) {
+  getProfile(@Req() req: FastifyRequest) {
     return req.user;
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
-  async refreshToken(@Req() req: Request) {
+  async refreshToken(@Req() req: FastifyRequest) {
     const refreshToken = req.cookies['refreshToken'];
     return await this.authService.refreshToken(refreshToken);
   }

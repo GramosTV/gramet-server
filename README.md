@@ -123,7 +123,3 @@ mau deploy
 ## License 📄
 
 Gramet is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
-```
-This README covers the main modules and setup instructions for your project. Adjust as needed for your specific requirements.
-```

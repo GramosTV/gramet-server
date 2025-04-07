@@ -13,11 +13,11 @@ import {
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { Request } from 'express';
 import { JwtAccessPayload } from 'src/common/interfaces/jwt.interface';
 import { JwtAdminGuard } from 'src/auth/guards/jwt-admin.guards';
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { Role } from 'src/common/enums/role.enum';
+import { FastifyRequest } from 'fastify';
 
 @Controller('orders')
 export class OrdersController {
@@ -26,12 +26,13 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @Req() req: Request & { user: JwtAccessPayload },
+    @Req() req: FastifyRequest,
     @Body() createOrderDto: CreateOrderDto,
   ) {
+    const user = req.user as JwtAccessPayload;
     const res = await this.ordersService.create(
-      req.user.sub,
-      req.user.email,
+      user.sub,
+      user.email,
       createOrderDto,
     );
     return { url: res.url };
@@ -45,21 +46,20 @@ export class OrdersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/findById/:id')
-  async findOne(
-    @Param('id') id: string,
-    @Req() req: Request & { user: JwtAccessPayload },
-  ) {
+  async findOne(@Param('id') id: string, @Req() req: FastifyRequest) {
+    const user = req.user as JwtAccessPayload;
     return await this.ordersService.findOne(
       id,
-      req.user.sub,
-      req.user.role === Role.ADMIN,
+      user.sub,
+      user.role === Role.ADMIN,
     );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/all')
-  async findAllByUserId(@Req() req: Request & { user: JwtAccessPayload }) {
-    return await this.ordersService.findAllByUserId(req.user.sub);
+  async findAllByUserId(@Req() req: FastifyRequest) {
+    const user = req.user as JwtAccessPayload;
+    return await this.ordersService.findAllByUserId(user.sub);
   }
 
   @UseGuards(JwtAdminGuard)

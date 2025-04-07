@@ -18,12 +18,12 @@ import {
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { JwtAdminGuard } from 'src/auth/guards/jwt-admin.guards';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { convertToBase64, compressImage } from 'src/lib/utils';
 import { map } from 'async';
 import { Product } from './schemas/product.schema';
 import { Category } from 'src/common/enums/category.enum';
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('products')
 export class ProductsController {
@@ -81,11 +81,11 @@ export class ProductsController {
   }
 
   @Get('/image/:id')
-  async getImage(@Param('id') id: string, @Res() res: Response) {
+  async getImage(@Param('id') id: string, @Res() res: FastifyReply) {
     try {
       const imageBase64 = await this.productService.getImage(id);
       const imageBuffer = Buffer.from(imageBase64, 'base64');
-      res.setHeader('Content-Type', 'image/png');
+      res.header('Content-Type', 'image/png');
       res.send(imageBuffer);
     } catch (error) {
       throw error;
@@ -167,11 +167,11 @@ export class ProductsController {
   }
 
   @Get('/obj/:id.obj')
-  async getObjFile(@Param('id') id: string, @Res() res: Response) {
+  async getObjFile(@Param('id') id: string, @Res() res: FastifyReply) {
     const objBase64 = await this.productService.getObjFile(id);
     const file = Buffer.from(objBase64, 'base64');
-    res.setHeader('Content-Type', 'model/obj');
-    res.setHeader('Content-Disposition', `attachment; filename="${id}.obj"`);
+    res.header('Content-Type', 'model/obj');
+    res.header('Content-Disposition', `attachment; filename="${id}.obj"`);
     res.send(file);
   }
 }

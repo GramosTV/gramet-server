@@ -11,6 +11,7 @@ import { ProductsService } from 'src/products/products.service';
 import { CartItem } from 'src/cart/schemas/cart.schema';
 import { OrdersService } from 'src/orders/orders.service';
 import { CartService } from 'src/cart/cart.service';
+import { FastifyRequest } from 'fastify';
 
 @Injectable()
 export class StripeService {
@@ -70,14 +71,17 @@ export class StripeService {
     return { url: session.url, id: session.id, products };
   }
 
-  async handleCheckoutWebhook(request: Request, body: any) {
+  async handleCheckoutWebhook(request: FastifyRequest, body: any) {
     const sig = request.headers['stripe-signature'];
     try {
+      const rawBody = request.rawBody;
+
       const event = this.stripe.webhooks.constructEvent(
-        body,
+        rawBody,
         sig,
         process.env.STRIPE_WEBHOOK_SECRET,
       );
+
       if (event.type === 'checkout.session.completed') {
         const order = await this.ordersService.complete(event.data.object.id);
         await this.productsService.decreaseStock(order.items);

@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Req } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { StripeService } from './stripe.service';
+import { FastifyRequest } from 'fastify';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -10,7 +11,10 @@ export class TransactionsController {
   ) {}
 
   @Post('/stripe/webhook')
-  async handleCheckoutWebhook(@Req() request, @Body() body) {
+  async handleCheckoutWebhook(
+    @Req() request: FastifyRequest,
+    @Body() body: any,
+  ) {
     return await this.stripeService.handleCheckoutWebhook(request, body);
   }
 }

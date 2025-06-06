@@ -1,4 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import {
@@ -13,6 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class RefreshTokensService {
   constructor(
+    private configService: ConfigService,
     @InjectModel(RefreshToken.name)
     private refreshTokenModel: Model<RefreshTokenDocument>,
     private jwtService: JwtService,
@@ -26,7 +28,7 @@ export class RefreshTokensService {
     try {
       const token = this.jwtService.sign(payload, {
         expiresIn: '30d',
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
       });
       const activeTokens = await this.refreshTokenModel.find({
         userId,

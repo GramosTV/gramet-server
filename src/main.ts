@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { MongooseValidationExceptionFilter } from './common/filters/mongoose-validation-exception.filter';
 import {
   FastifyAdapter,
@@ -38,9 +39,11 @@ async function bootstrap() {
     jsonContentTypes: [],
   });
 
-  app.enableCors({ origin: process.env.CLIENT_URL });
+  const configService = app.get(ConfigService);
 
-  await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
+  app.enableCors({ origin: configService.getOrThrow<string>('CLIENT_URL') });
+
+  await app.listen(configService.get<string>('PORT') ?? 3001, '0.0.0.0');
 }
 
 bootstrap();

@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { map } from 'async';
 import { ProductsService } from 'src/products/products.service';
@@ -16,14 +17,16 @@ import { FastifyRequest } from 'fastify';
 @Injectable()
 export class StripeService {
   private stripe: Stripe;
-
   constructor(
+    private readonly configService: ConfigService,
     private readonly productsService: ProductsService,
     @Inject(forwardRef(() => OrdersService))
     private readonly ordersService: OrdersService,
     private readonly cartService: CartService,
   ) {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    this.stripe = new Stripe(
+      this.configService.getOrThrow<string>('STRIPE_SECRET_KEY'),
+    );
   }
 
   async createCheckoutSession(
@@ -59,14 +62,17 @@ export class StripeService {
             display_name: 'Standardowa wysyłka',
             type: 'fixed_amount',
             fixed_amount: {
-              amount: Number(process.env.FIXED_DELIVERY_COST) * 100,
+              amount:
+                Number(
+                  this.configService.getOrThrow<string>('FIXED_DELIVERY_COST'),
+                ) * 100,
               currency: 'pln',
             },
           },
         },
       ],
-      success_url: `${process.env.CLIENT_URL}/orders/${orderId}`,
-      cancel_url: `${process.env.CLIENT_URL}/checkout`,
+      success_url: `${this.configService.getOrThrow<string>('CLIENT_URL')}/orders/${orderId}`,
+      cancel_url: `${this.configService.getOrThrow<string>('CLIENT_URL')}/checkout`,
     });
     return { url: session.url, id: session.id, products };
   }
@@ -75,11 +81,10 @@ export class StripeService {
     const sig = request.headers['stripe-signature'];
     try {
       const rawBody = request.rawBody;
-
       const event = this.stripe.webhooks.constructEvent(
         rawBody,
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET,
+        this.configService.getOrThrow<string>('STRIPE_WEBHOOK_SECRET'),
       );
 
       if (event.type === 'checkout.session.completed') {

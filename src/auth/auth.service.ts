@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   ForbiddenException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -19,27 +20,26 @@ import { MailService } from 'src/mail/mail.service';
 @Injectable()
 export class AuthService {
   constructor(
+    private configService: ConfigService,
     private usersService: UsersService,
     private jwtService: JwtService,
     private refreshTokensService: RefreshTokensService,
     private mailService: MailService,
   ) {}
-
   generateAccessToken(payload: JwtAccessPayload): string {
     try {
       return this.jwtService.sign(payload, {
         expiresIn: '15m',
-        secret: process.env.JWT_SECRET,
+        secret: this.configService.getOrThrow<string>('JWT_SECRET'),
       });
     } catch (error) {
       throw new InternalServerErrorException('Error generating access token');
     }
   }
-
   async validateRefreshToken(refreshToken: string): Promise<JwtRefreshPayload> {
     try {
       const decoded = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
       });
 
       const token = await this.refreshTokensService.findOne(decoded.jti);
@@ -107,11 +107,10 @@ export class AuthService {
       throw new InternalServerErrorException('Error during login process');
     }
   }
-
   async logout(refreshToken: string) {
     try {
       const decoded = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
       });
       await this.refreshTokensService.revoke(decoded.jti);
       return { message: 'Logout successful' };
@@ -135,11 +134,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
-
   async verifyEmail(token: string) {
     try {
       const decoded = await this.jwtService.verify(token, {
-        secret: process.env.JWT_MAIL_SECRET,
+        secret: this.configService.getOrThrow<string>('JWT_MAIL_SECRET'),
       });
       const user = await this.usersService.findOneById(decoded.userId);
       user.activated = true;
@@ -160,7 +158,9 @@ export class AuthService {
             { userId: user._id },
             {
               expiresIn: '1h',
-              secret: process.env.JWT_PASSWORD_SECRET,
+              secret: this.configService.getOrThrow<string>(
+                'JWT_PASSWORD_SECRET',
+              ),
             },
           ),
         );
@@ -170,11 +170,10 @@ export class AuthService {
       return true;
     }
   }
-
   async resetPassword(token: string, password: string) {
     try {
       const decoded = await this.jwtService.verify(token, {
-        secret: process.env.JWT_PASSWORD_SECRET,
+        secret: this.configService.getOrThrow<string>('JWT_PASSWORD_SECRET'),
       });
       const user = await this.usersService.findOneById(decoded.userId);
       if (!user) {
